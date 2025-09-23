@@ -7,13 +7,11 @@ const database = process.env.DB_DATABASE || 'files_manager';
 class DBClient {
   constructor() {
     this.client = new MongoClient(`mongodb://${host}:${port}`);
+    this.db = null;
   }
 
   isAlive() {
-    if (this.client.connect()) {
-      return true;
-    }
-    return false;
+    return this.db !== null;
   }
 
   async nbUsers() {
