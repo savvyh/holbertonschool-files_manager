@@ -11,7 +11,13 @@ class DBClient {
   }
 
   isAlive() {
-    return this.db !== null;
+    try {
+      this.client.connect();
+      this.db = this.client.db(database);
+    } catch (error) {
+      return false;
+    }
+    return true;
   }
 
   async nbUsers() {
