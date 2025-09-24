@@ -2,7 +2,7 @@ import sha1 from 'sha1';
 import dbClient from '../utils/db';
 
 class UsersController {
-    async addNewUser(request, response) {
+    async postNew(request, response) {
         const { email, password } = request.body;
         if (!email) {
             return response.status(400).json({ error: 'Missing email' });
