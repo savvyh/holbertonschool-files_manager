@@ -12,7 +12,7 @@ class DBClient {
 
   isAlive() {
     try {
-      this.client.connect();
+      this.client.isConnect();
       this.db = this.client.db(database);
     } catch (error) {
       return false;
