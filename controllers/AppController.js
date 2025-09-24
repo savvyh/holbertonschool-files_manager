@@ -2,20 +2,20 @@ import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
 class AppController {
-  static async getStatus(req, res) {
+  static async getStatus(response) {
     const status = {
       redis: redisClient.isAlive(),
       db: dbClient.isAlive(),
     };
-    return res.status(200).json(status);
+    return response.status(200).json(status);
   }
 
-  static async getStats(req, res) {
+  static async getStats(response) {
     const [users, files] = await Promise.all([
       dbClient.nbUsers(),
       dbClient.nbFiles(),
     ]);
-    return res.status(200).json({ users, files });
+    return response.status(200).json({ users, files });
   }
 }
 
