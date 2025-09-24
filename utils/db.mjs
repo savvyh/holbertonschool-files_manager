@@ -16,6 +16,7 @@ class DBClient {
       this.db = this.client.db(database);
       return true;
     } catch (error) {
+      this.db = null;
       return false;
     }
   }
