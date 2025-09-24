@@ -23,16 +23,14 @@ class DBClient {
 
   async nbUsers() {
     if (!this.db) {
-      await this.client.connect();
-      this.db = this.client.db(database);
+      return 0;
     }
     return this.db.collection('users').countDocuments({});
   }
 
   async nbFiles() {
     if (!this.db) {
-      await this.client.connect();
-      this.db = this.client.db(database);
+      return 0;
     }
     return this.db.collection('files').countDocuments({});
   }
