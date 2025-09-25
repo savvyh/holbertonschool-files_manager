@@ -169,6 +169,28 @@ class FilesController {
     await dbClient.db.collection('files').updateOne({ _id: ObjectId(fileId) }, { $set: { isPublic: false } });
     return response.status(200).json(file);
   }
+
+  static async getFile(request, response) {
+    const token = request.headers['x-token'] || request.headers['X-Token'];
+    const userId = await redisClient.get(`auth_${token}`);
+
+    const fileId = request.params.id;
+    const file = await dbClient.db.collection('files').findOne({ _id: ObjectId(fileId) });
+    if (file.isPublic === false && file.userId !== ObjectId(userId)) {
+      return response.status(404).json({ error: 'Not found' });
+    }
+    if (file.type === 'folder') {
+        return response.status(400).json({ error: 'A folder doesn\'t have content' });
+    }
+    if (!fileSystem.existsSync(file.localPath)) {
+      return response.status(404).json({ error: 'Not found' });
+    }
+
+    const filePath = file.localPath;
+    const fileContent = fileSystem.readFileSync(filePath);
+    const mimeType = mime.getType(filePath);
+    return response.status(200).set('Content-Type', mimeType).send(fileContent);
+  }
 }
 
 export default FilesController;
