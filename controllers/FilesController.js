@@ -53,14 +53,14 @@ class FilesController {
       fileSystem.mkdirSync(folderPath, { recursive: true });
     }
 
-    const fileContent = Buffer.from(data, 'base64');
-    fileSystem.writeFileSync(localPath, fileContent);
-
     const fileName = uuidv4();
     const localPath = `${folderPath}/${fileName}`;
     const result = await dbClient.db.collection('files').insertOne({
       userId: ObjectId(userId), name, type, isPublic, parentId, localPath,
     });
+
+    const fileContent = Buffer.from(data, 'base64');
+    fileSystem.writeFileSync(localPath, fileContent);
 
     return response.status(201).json({
       id: result.insertedId,
