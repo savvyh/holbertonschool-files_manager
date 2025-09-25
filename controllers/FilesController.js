@@ -42,7 +42,9 @@ class FilesController {
       const fileResult = await dbClient.db.collection('files').insertOne({
         userId: ObjectId(userId), name, type, parentId, isPublic,
       });
-      return response.status(201).json(fileResult.insertedId, userId, name, type, parentId, isPublic);
+      return response.status(201).json({
+        id: fileResult.insertedId, userId, name, type, parentId, isPublic,
+      });
     }
 
     const folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
