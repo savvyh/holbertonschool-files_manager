@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ObjectId } from 'mongodb';
+import fileSystem from 'fs';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -48,6 +49,13 @@ class FilesController {
     }
 
     const folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
+    if (!fileSystem.existsSync(folderPath)) {
+      fileSystem.mkdirSync(folderPath, { recursive: true });
+    }
+
+    const fileContent = Buffer.from(data, 'base64');
+    fileSystem.writeFileSync(localPath, fileContent);
+
     const fileName = uuidv4();
     const localPath = `${folderPath}/${fileName}`;
     const result = await dbClient.db.collection('files').insertOne({
