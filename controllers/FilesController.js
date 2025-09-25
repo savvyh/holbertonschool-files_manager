@@ -108,9 +108,6 @@ class FilesController {
 
     const parentId = request.query.parentId || 0;
     const page = request.query.page || 0;
-    if (parentId === '0' || page === '0') {
-      return response.json({ data: [] });
-    }
 
     const query = {
       userId: ObjectId(userId),
