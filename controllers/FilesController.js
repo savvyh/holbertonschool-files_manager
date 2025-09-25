@@ -145,7 +145,7 @@ class FilesController {
     }
 
     file.isPublic = true;
-    await dbClient.db.collection('files').updateOne({ _id: ObjectId(fileId) }, file);
+    await dbClient.db.collection('files').updateOne({ _id: ObjectId(fileId) }, { $set: { isPublic: true } });
     return response.status(200).json(file);
   }
 
@@ -166,7 +166,7 @@ class FilesController {
     }
 
     file.isPublic = false;
-    await dbClient.db.collection('files').updateOne({ _id: ObjectId(fileId) }, file);
+    await dbClient.db.collection('files').updateOne({ _id: ObjectId(fileId) }, { $set: { isPublic: false } });
     return response.status(200).json(file);
   }
 }
