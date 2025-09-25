@@ -9,6 +9,11 @@ class FilesController {
       return response.status(401).json({ error: 'Unauthorized' });
     }
 
+    const userId = await redisClient.get(`auth_${token}`);
+    if (!userId) {
+      return response.status(401).json({ error: 'Unauthorized' });
+    }
+
     const {
       name, type, parentId, isPublic, data,
     } = request.body;
@@ -21,6 +26,7 @@ class FilesController {
     if (!data && type !== 'folder') {
       return response.status(400).json({ error: 'Missing data' });
     }
+
     if (parentId && !dbClient.db.collection('files').findOne({ _id: parentId })) {
       return response.status(400).json({ error: 'Parent not found' });
     }
@@ -28,7 +34,6 @@ class FilesController {
       return response.status(400).json({ error: 'Parent is not a folder' });
     }
 
-    const userId = await redisClient.get(`auth_${token}`);
     if (type === 'folder') {
       const file = await dbClient.db.collection('files').insertOne({
         name, type, parentId, isPublic, userId,
