@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -27,28 +28,39 @@ class FilesController {
       return response.status(400).json({ error: 'Missing data' });
     }
 
-    if (parentId && !dbClient.db.collection('files').findOne({ _id: parentId })) {
-      return response.status(400).json({ error: 'Parent not found' });
-    }
-    if (parentId && dbClient.db.collection('files').findOne({ _id: parentId }).type !== 'folder') {
-      return response.status(400).json({ error: 'Parent is not a folder' });
+    if (parentId !== 0) {
+      const parentFile = await dbClient.db.collection('files').findOne({ _id: ObjectId(parentId) });
+      if (!parentFile) {
+        return response.status(400).json({ error: 'Parent not found' });
+      }
+      if (parentFile.type !== 'folder') {
+        return response.status(400).json({ error: 'Parent is not a folder' });
+      }
     }
 
     if (type === 'folder') {
-      const file = await dbClient.db.collection('files').insertOne({
-        name, type, parentId, isPublic, userId,
+      const fileResult = await dbClient.db.collection('files').insertOne({
+        userId: ObjectId(userId), name, type, parentId, isPublic,
       });
-      return response.status(201).json(file);
+      return response.status(201).json(fileResult.insertedId, userId, name, type, parentId, isPublic);
     }
 
     const folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
     const fileName = uuidv4();
     const localPath = `${folderPath}/${fileName}`;
-
-    const newFile = await dbClient.db.collection('files').insertOne({
-      userId, name, type, isPublic, parentId, localPath,
+    const result = await dbClient.db.collection('files').insertOne({
+      userId: ObjectId(userId), name, type, isPublic, parentId, localPath,
     });
-    return response.status(201).json(newFile);
+
+    return response.status(201).json({
+      id: result.insertedId,
+      userId,
+      name,
+      type,
+      isPublic,
+      parentId,
+      localPath,
+    });
   }
 }
 
