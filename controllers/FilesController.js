@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import fileSystem from 'fs';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+import mime from 'mime-types';
 
 class FilesController {
   static async postUpload(request, response) {
@@ -180,7 +181,7 @@ class FilesController {
       return response.status(404).json({ error: 'Not found' });
     }
     if (file.type === 'folder') {
-        return response.status(400).json({ error: 'A folder doesn\'t have content' });
+      return response.status(400).json({ error: 'A folder doesn\'t have content' });
     }
     if (!fileSystem.existsSync(file.localPath)) {
       return response.status(404).json({ error: 'Not found' });
