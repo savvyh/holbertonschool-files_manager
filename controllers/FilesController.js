@@ -16,7 +16,7 @@ class FilesController {
     }
 
     const {
-      name, type, parentId, isPublic, data,
+      name, type, parentId = 0, isPublic, data,
     } = request.body;
     if (!name) {
       return response.status(400).json({ error: 'Missing name' });
